@@ -16,33 +16,24 @@ const criaNovaLinha = (nome, email) => {
 
 const tabela = document.querySelector('[data-tabela]');
 
-
-const http = new XMLHttpRequest();
-http.open('GET', 'http://localhost:3000/profile')
-http.send()
-
-//exibindo dados do cliente
-http.onload = () => {
-  const data = JSON.parse(http.response)
-  data.forEach(elemento => {
-    tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+const listaClientes = () => {
+  return fetch(`http://localhost:3000/profile`)
+  .then( res => {
+    return res.json()
   })
-
-  //cliente cadastrados na semana anterior
-  const http2 = new XMLHttpRequest()
-  http2.open('GET', 'http://localhost:3000/profile/semanaPassada')
-
-  http2.onload = () => {
-    //puxando dados semana retrasada
-    const http3 = new XMLHttpRequest()
-    http3.open('GET', 'http://localhost:3000/profile/semanaRetrasada')
-
-    http3.onload = () => {
-      
-    }
-
-
   }
 
-  http2.send()
-}
+  listaClientes()
+  .then(data => {
+    data.forEach(elemento => {
+      tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+  })
+  })
+ 
+
+
+  /*http.onload = () => {
+      const data = JSON.parse(http.response)
+      data.forEach(elemento => {
+        tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+    })}*/

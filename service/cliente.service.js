@@ -20,15 +20,21 @@ const listaClientes = () => {
   return fetch(`http://localhost:3000/profile`)
   .then( res => {
     return res.json()
+
   })
+  
   }
 
   listaClientes()
   .then(data => {
-    data.forEach(elemento => {
+    data.forEach(elemento=>{
       tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+    })
   })
-  })
+
+
+
+
  
 
 

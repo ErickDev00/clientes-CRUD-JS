@@ -10,7 +10,7 @@ const criaNovaLinha = (nome, email, id) => {
         <td>${email}</td>
         <td>
             <ul class="tabela__botoes-controle">
-                <li><a href="../telas/edita_cliente.html" class="botao-simples botao-simples--editar">Editar</a></li>
+                <li><button class="botao-simples botao-simples--editar" type="button" data-id="${id}">Editar</button></li>
                 <li><button class="botao-simples botao-simples--excluir" type="button">Excluir</button></li>
             </ul>
         </td>
@@ -50,6 +50,17 @@ const removeCliente = (id) => {
     .catch(err => console.error('Erro ao remover cliente:', err));
 };
 
+// Função para atualizar cliente
+const atualizaCliente = (id, nome, email) => {
+    return fetch(`http://localhost:3000/profile/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email })
+    })
+    .then(res => res.json())
+    .catch(err => console.error('Erro ao atualizar cliente:', err));
+};
+
 // Adicionando clientes na tabela ao carregar a página
 listaClientes().then(data => {
     data.forEach(cliente => {
@@ -70,16 +81,31 @@ if (formulario) {
     });
 }
 
-// Capturando evento de clique para deletar clientes
+// Capturando evento de clique para editar ou deletar clientes
 if (tabela) {
     tabela.addEventListener('click', (evento) => {
+        const linhaCliente = evento.target.closest('tr');
+        const id = linhaCliente.dataset.id;
+        
         if (evento.target.classList.contains('botao-simples--excluir')) {
-            const linhaCliente = evento.target.closest('tr');
-            const id = linhaCliente.dataset.id;
-            
             removeCliente(id).then(() => {
                 linhaCliente.remove();
             });
+        }
+
+        if (evento.target.classList.contains('botao-simples--editar')) {
+            const nomeAtual = linhaCliente.querySelector('[data-td]').innerText;
+            const emailAtual = linhaCliente.children[1].innerText;
+            
+            const novoNome = prompt('Editar Nome:', nomeAtual);
+            const novoEmail = prompt('Editar Email:', emailAtual);
+            
+            if (novoNome && novoEmail) {
+                atualizaCliente(id, novoNome, novoEmail).then(() => {
+                    linhaCliente.querySelector('[data-td]').innerText = novoNome;
+                    linhaCliente.children[1].innerText = novoEmail;
+                });
+            }
         }
     });
 }

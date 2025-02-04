@@ -1,5 +1,5 @@
 //criando tabela cliente
-const criaNovaLinha = (nome, email) => {
+const criaNovaLinha = (nome, email, id) => {
   const linhaNovoCliente = document.createElement('tr');
   const conteudo = `<td class="td" data-td>${nome}</td>
                 <td>${email}</td>
@@ -11,11 +11,33 @@ const criaNovaLinha = (nome, email) => {
                 </td> `
 
   linhaNovoCliente.innerHTML = conteudo;
+  linhaNovoCliente.dataset.id = id;
   return linhaNovoCliente;
 }
 
 const tabela = document.querySelector('[data-tabela]');
 const formulario = document.querySelector('[data-form]');
+
+const removeCliente = (id) => {
+  return fetch(`http:localhost:3000/profile/${id}`, {
+    method: 'DELETE'
+  })
+}
+
+
+
+tabela.addEventListener('click', (evento) => {
+  let botaoDeletar = evento.target.className === 'botao-simples botao-simples--excluir'
+  if(botaoDeletar){
+    const linhaCliente = evento.target.closest('[data-id]')
+    let id = linhaCliente.dataset.id
+    removeCliente(id).then(()=>{
+      linhaCliente.remove()
+    })
+  }
+})
+
+
 
 const listaClientes = () => {
   return fetch(`http://localhost:3000/profile`)
@@ -24,10 +46,12 @@ const listaClientes = () => {
   })
   }
 
+
+
   listaClientes()
   .then(data => {
     data.forEach(elemento=>{
-      tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+      tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email, elemento.id))
     })
   })
 
@@ -59,4 +83,7 @@ formulario.addEventListener( 'submit', (evento) => {
     window.location.href = '../telas/cadastro_concluido.html'
   })
 })
+
+
+
 
